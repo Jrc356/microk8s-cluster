@@ -26,4 +26,4 @@ basically a folder. Read more [here](https://docs.unraid.net/unraid-os/manual/sh
       5. XMLs found in the [unraid-vm-xml dir](./unraid-vm-xml/)
       6. Install Ubuntu Server ensuring SSH is installed and started
 
-[^1] From a quick search, I found [this issue](https://github.com/canonical/microk8s/issues/319) mentioning that the minimum specs for a microk8s node seems to be 1 CPU, 1 GB Memory, and 3 GB of storage. My numbers were chosen on a whim :sparkles:
+[^1]: From a quick search, I found [this issue](https://github.com/canonical/microk8s/issues/319) mentioning that the minimum specs for a microk8s node seems to be 1 CPU, 1 GB Memory, and 3 GB of storage. My numbers were chosen on a whim :sparkles:
