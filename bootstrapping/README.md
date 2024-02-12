@@ -46,6 +46,8 @@ set them up... so instead let's spend more time than it would take to manually d
 [Ansible](https://docs.ansible.com/ansible/latest/index.html). You can find the playbook I made
 (mostly cut from [istvano's](https://github.com/istvano/ansible_role_microk8s) handiwork).
 
+Run the playbook with `ansible-playbook -i inventory.yml playbook.yml -k`
+
 It's been a long while since I've tinkered with ansible... I still don't like it :)
 
 ## Kubectl Setup
