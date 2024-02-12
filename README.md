@@ -55,4 +55,13 @@ Now that we have some VM's, we need to configure them. We'll use ansible for thi
 4. ...
 5. profit
 
+## Kubectl Setup
+
+I was a bit too lazy to figure out a nice way of doing this with ansible... maybe I'll come back to that. So instead I did the following:
+
+1. ssh into a node - `ssh microk8s@10.0.0.203`
+2. run `microk8s config > kubeconfig.yml`
+3. copy to my local machine: `scp microk8s@10.0.0.203:/home/microk8s/kubeconfig.yml kubeconfig.yml`
+4. then nitpicked the sections I needed into my existing kubeconfig
+
 [^1]: From a quick search, I found [this issue](https://github.com/canonical/microk8s/issues/319) mentioning that the minimum specs for a microk8s node seems to be 1 CPU, 1 GB Memory, and 3 GB of storage. My numbers were chosen on a whim :sparkles:
