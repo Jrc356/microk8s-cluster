@@ -95,3 +95,17 @@
       register: join_output
       failed_when:
         - join_output.rc > 0
+
+# only the argocd addon is enabled, everything else is installed via argocd
+- name: Enable Addons
+  hosts: cluster
+  become: true
+  tasks:
+    - name: Enable community addons
+      delegate_to: "{{ groups.cluster[0] }}"
+      changed_when: false
+      ansible.builtin.command: microk8s enable community
+    - name: Enable argocd addon
+      delegate_to: "{{ groups.cluster[0] }}"
+      changed_when: false
+      ansible.builtin.command: microk8s enable argocd
