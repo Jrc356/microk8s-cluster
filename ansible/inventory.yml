@@ -1,0 +1,19 @@
+masters:
+  hosts:
+    microk8s-master-1:
+      ansible_host: 10.0.0.203
+      ansible_user: microk8s
+
+workers:
+  hosts:
+    microk8s-worker-1:
+      ansible_host: 10.0.0.204
+      ansible_user: microk8s
+    microk8s-worker-2:
+      ansible_host: 10.0.0.205
+      ansible_user: microk8s
+
+cluster:
+  children:
+    masters:
+    workers:

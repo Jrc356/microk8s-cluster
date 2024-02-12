@@ -1,0 +1,97 @@
+# hugely ripped from https://github.com/istvano/ansible_role_microk8s/tree/master
+
+- name: Install microk8s
+  hosts: cluster
+  become: true
+  tasks:
+    - name: Install
+      community.general.snap:
+        name:
+          - microk8s
+        channel: 1.29
+        classic: true
+
+    - name: Wait for microk8s
+      ansible.builtin.command: microk8s status --wait-ready
+      changed_when: false
+
+    - name: Create kubectl alias
+      ansible.builtin.command: snap alias microk8s.kubectl kubectl
+      changed_when: false
+
+    - name: Add user to microk8s group
+      ansible.builtin.command: usermod -a -G microk8s {{ ansible_user }}
+      changed_when: false
+
+    - name: Grant user read access to ~/.kube
+      ansible.builtin.command: chown -f -R {{ ansible_user }} ~/.kube
+      changed_when: false
+
+- name: Setup masters
+  hosts: masters
+  become: true
+  tasks:
+    - name: Set primary master
+      ansible.builtin.set_fact:
+        primary_master: "{{ groups.masters[0] }}"
+
+    - name: Get the microk8s join command from the primary microk8s master
+      delegate_to: "{{ primary_master }}"
+      delegate_facts: true
+      ansible.builtin.shell: |
+        set -o pipefail
+        microk8s add-node | grep -E -m1 'microk8s join ([0-9]{1,3}[\\.]){3}[0-9]{1,3}'
+      args:
+        executable: /bin/bash
+      changed_when: false
+      register: join_command
+
+    - name: Get microk8s cluster nodes
+      ansible.builtin.command: microk8s kubectl get node
+      delegate_to: "{{ primary_master }}"
+      delegate_facts: true
+      changed_when: false
+      register: cluster_nodes
+
+    - name: Join other masters
+      when: cluster_nodes.stdout.find(inventory_hostname) == -1
+      ansible.builtin.command: "{{ join_command.stdout }}"
+      delegate_facts: true
+      changed_when: false
+      register: join_output
+      failed_when:
+        - join_output.rc > 0
+
+- name: Setup workers
+  hosts: workers
+  become: true
+  tasks:
+    - name: Set primary master
+      ansible.builtin.set_fact:
+        primary_master: "{{ groups.masters[0] }}"
+
+    - name: Get the microk8s join command from the primary microk8s master
+      delegate_to: "{{ primary_master }}"
+      delegate_facts: true
+      ansible.builtin.shell: |
+        set -o pipefail
+        microk8s add-node | grep -E -m1 'microk8s join ([0-9]{1,3}[\\.]){3}[0-9]{1,3}'
+      args:
+        executable: /bin/bash
+      changed_when: false
+      register: join_command
+
+    - name: Get microk8s cluster nodes
+      ansible.builtin.command: "microk8s kubectl get node"
+      delegate_to: "{{ primary_master }}"
+      delegate_facts: true
+      changed_when: false
+      register: cluster_nodes
+
+    - name: Set the microk8s join command on the microk8s node
+      when: cluster_nodes.stdout.find(inventory_hostname) == -1
+      ansible.builtin.command: "{{ join_command.stdout }} --worker"
+      changed_when: false
+      register: join_output
+      failed_when:
+        - join_output.rc > 0

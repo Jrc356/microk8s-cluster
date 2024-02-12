@@ -14,7 +14,7 @@ This guide will not go into depth about the various Unraid terms, however, I hav
 
 basically a folder. Read more [here](https://docs.unraid.net/unraid-os/manual/shares/).
 
-## Creating the Cluster
+## Creating the Cluster Nodes
 
 1. [Download ubuntu server iso](https://ubuntu.com/download/server) and copy it to an Unraid share
 2. Create 3 VMs
@@ -38,5 +38,21 @@ basically a folder. Read more [here](https://docs.unraid.net/unraid-os/manual/sh
                3. gateway: 10.0.0.1
                4. name servers: 8.8.8.8, 1.1.1.1
       7. Stop VMs, unmount installation disks, restart vms
+
+## Setup SSH
+
+1. generate host keys if not already - `ssh-keygen -t rsa`
+2. copy your public key to each node - `ssh-copy-id <user>@<ip>`
+
+## Ansible
+
+Now that we have some VM's, we need to configure them. We'll use ansible for this.
+
+0. install ansible
+1. create an inventory
+2. create a playbook
+3. run the playbook
+4. ...
+5. profit
 
 [^1]: From a quick search, I found [this issue](https://github.com/canonical/microk8s/issues/319) mentioning that the minimum specs for a microk8s node seems to be 1 CPU, 1 GB Memory, and 3 GB of storage. My numbers were chosen on a whim :sparkles:
