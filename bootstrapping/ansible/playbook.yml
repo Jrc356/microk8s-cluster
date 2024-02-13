@@ -96,8 +96,7 @@
       failed_when:
         - join_output.rc > 0
 
-# only the argocd addon is enabled, everything else is installed via argocd
-- name: Enable Addons
+- name: Install ArgoCD
   hosts: cluster
   become: true
   tasks:
