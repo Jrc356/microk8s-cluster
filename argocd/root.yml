@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    automated: {}
+  source:
+    repoURL: https://github.com/Jrc356/microk8s-cluster
+    path: argocd/apps
+    targetRevision: main
+  destination:
+    name: in-cluster
+    namespace: argocd

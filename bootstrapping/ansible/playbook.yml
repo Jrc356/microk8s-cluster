@@ -96,15 +96,27 @@
       failed_when:
         - join_output.rc > 0
 
-- name: Install ArgoCD
-  hosts: cluster
-  become: true
+- name: Install & Configure ArgoCD
+  hosts: microk8s-master-1
   tasks:
     - name: Enable community addons
-      delegate_to: "{{ groups.cluster[0] }}"
       changed_when: false
       ansible.builtin.command: microk8s enable community
+
     - name: Enable argocd addon
-      delegate_to: "{{ groups.cluster[0] }}"
       changed_when: false
       ansible.builtin.command: microk8s enable argocd
+
+    - name: Enable argocd addon
+      changed_when: false
+      ansible.builtin.command: microk8s enable argocd
+
+    - name: Copy argocd/root.yml
+      ansible.builtin.copy:
+        src: "../../argocd/root.yml"
+        dest: "./root.yml"
+        mode: "0400"
+
+    - name: Create app of apps
+      ansible.builtin.command: microk8s kubectl create -f root.yml
+      changed_when: false
