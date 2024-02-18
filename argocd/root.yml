@@ -6,7 +6,9 @@ metadata:
 spec:
   project: default
   syncPolicy:
-    automated: {}
+    automated:
+      prune: true
+      selfHeal: true
   source:
     repoURL: https://github.com/Jrc356/microk8s-cluster
     path: argocd/apps
