@@ -18,7 +18,7 @@ spec:
     helm:
       values: |
         extraArgs:
-          --enable-skip-login
+          - --enable-skip-login
   destination:
     name: in-cluster
     namespace: dashboard
