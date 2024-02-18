@@ -6,14 +6,14 @@ This repo is a monorepo of my homelab microk8s cluster
 
 ### Things to Do
 
-- CoreDNS
-- Setup kubernetes dashboard
 - Observability stack
 
 ### Things being Done
 
-- setup ArgoCD
+- Setup kubernetes dashboard
 
 ### Done Things
 
 - bootstrap cluster
+- setup ArgoCD
+- CoreDNS
