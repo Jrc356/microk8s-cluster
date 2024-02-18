@@ -96,7 +96,7 @@
       failed_when:
         - join_output.rc > 0
 
-- name: Install & Configure ArgoCD
+- name: Install ArgoCD & CoreDNS
   hosts: microk8s-master-1
   tasks:
     - name: Enable community addons
@@ -107,9 +107,9 @@
       changed_when: false
       ansible.builtin.command: microk8s enable argocd
 
-    - name: Enable argocd addon
+    - name: Enable dns addon
       changed_when: false
-      ansible.builtin.command: microk8s enable argocd
+      ansible.builtin.command: microk8s enable dns
 
     - name: Copy argocd/root.yml
       ansible.builtin.copy:
@@ -118,5 +118,5 @@
         mode: "0400"
 
     - name: Create app of apps
-      ansible.builtin.command: microk8s kubectl create -f root.yml
+      ansible.builtin.command: microk8s kubectl apply -f root.yml
       changed_when: false
