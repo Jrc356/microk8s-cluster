@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <domain type='kvm'>
   <name>microk8s-master-1</name>
-  <uuid>cf9adf53-bdf2-c3ac-3874-5e43ab2f4b83</uuid>
   <description>Master node of microk8s cluster</description>
   <metadata>
     <vmtemplate xmlns="unraid" name="Ubuntu" icon="ubuntu.png" os="ubuntu"/>
@@ -13,8 +12,8 @@
   </memoryBacking>
   <vcpu placement='static'>2</vcpu>
   <cputune>
-    <vcpupin vcpu='0' cpuset='0'/>
-    <vcpupin vcpu='1' cpuset='6'/>
+    <vcpupin vcpu='0' cpuset='2'/>
+    <vcpupin vcpu='1' cpuset='8'/>
   </cputune>
   <os>
     <type arch='x86_64' machine='pc-q35-7.1'>hvm</type>
@@ -46,14 +45,6 @@
       <boot order='1'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
     </disk>
-    <disk type='file' device='cdrom'>
-      <driver name='qemu' type='raw'/>
-      <source file='/mnt/user/isos/ubuntu-22.04.2-live-server-amd64.iso'/>
-      <target dev='hda' bus='sata'/>
-      <readonly/>
-      <boot order='2'/>
-      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
-    </disk>
     <controller type='usb' index='0' model='ich9-ehci1'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x7'/>
     </controller>
@@ -63,19 +54,13 @@
     </controller>
     <controller type='usb' index='0' model='ich9-uhci2'>
       <master startport='2'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x1'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x1' multifunction='on'/>
     </controller>
     <controller type='usb' index='0' model='ich9-uhci3'>
       <master startport='4'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x2'/>
     </controller>
-    <controller type='sata' index='0'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
-    </controller>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='virtio-serial' index='0'>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
-    </controller>
     <controller type='pci' index='1' model='pcie-root-port'>
       <model name='pcie-root-port'/>
       <target chassis='1' port='0x10'/>
@@ -100,6 +85,12 @@
       <model name='pcie-root-port'/>
       <target chassis='5' port='0x14'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x4'/>
+    </controller>
+    <controller type='virtio-serial' index='0'>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
+    </controller>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
     </controller>
     <interface type='bridge'>
       <mac address='52:54:00:21:e6:f9'/>
