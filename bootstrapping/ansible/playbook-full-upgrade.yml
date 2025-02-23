@@ -1,43 +1,55 @@
-- name: Upgrade dependencies and MicroK8s on master nodes one at a time
-  hosts: masters
+- name: Upgrade dependencies and MicroK8s on nodes one by one
+  hosts: cluster
+  vars_prompt:
+    - name: "microk8s_channel"
+      prompt: "Which channel would you like to upgrade to?"
+      private: false
+      default: "1.32/stable"
   become: yes
   serial: 1
   tasks:
-    - name: Drain the master node
+    - name: Drain the node
       command: microk8s kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
 
-    - name: Update apt cache on master
+    - name: Update apt cache
       apt:
         update_cache: yes
 
-    - name: Upgrade all packages on master
+    - name: Upgrade OS
       apt:
         upgrade: dist
 
-    - name: Refresh MicroK8s snap on master
-      command: snap refresh microk8s
-
-    - name: Uncordon the master node
-      command: microk8s kubectl uncordon {{ inventory_hostname }}
-
-- name: Upgrade dependencies and MicroK8s on worker nodes one at a time
-  hosts: workers
-  become: yes
-  serial: 1
-  tasks:
-    - name: Drain the worker node
-      command: microk8s kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
-
-    - name: Update apt cache on worker
+    - name: Upgrade apt packages
       apt:
-        update_cache: yes
+        name: "*"
+        state: latest
 
-    - name: Upgrade all packages on worker
-      apt:
-        upgrade: dist
+    - name: Upgrade microk8s
+      community.general.snap:
+        name:
+          - microk8s
+        classic: true
+        channel: "{{ microk8s_channel }}"
 
-    - name: Refresh MicroK8s snap on worker
-      command: snap refresh microk8s
+    - name: Remove useless packages from the cache
+      ansible.builtin.apt:
+        autoclean: yes
 
-    - name: Uncordon the worker node
+    - name: apt clean
+      ansible.builtin.apt:
+        clean: yes
+        autoremove: yes
+        purge: true
+
+    - name: Check if reboot is required on master
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required
+
+    - name: Reboot if needed
+      reboot:
+        reboot_timeout: 300
+      when: reboot_required.stat.exists
+
+    - name: Uncordon the node
       command: microk8s kubectl uncordon {{ inventory_hostname }}
