@@ -1,0 +1,43 @@
+- name: Upgrade dependencies and MicroK8s on master nodes one at a time
+  hosts: masters
+  become: yes
+  serial: 1
+  tasks:
+    - name: Drain the master node
+      command: microk8s kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
+
+    - name: Update apt cache on master
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages on master
+      apt:
+        upgrade: dist
+
+    - name: Refresh MicroK8s snap on master
+      command: snap refresh microk8s
+
+    - name: Uncordon the master node
+      command: microk8s kubectl uncordon {{ inventory_hostname }}
+
+- name: Upgrade dependencies and MicroK8s on worker nodes one at a time
+  hosts: workers
+  become: yes
+  serial: 1
+  tasks:
+    - name: Drain the worker node
+      command: microk8s kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
+
+    - name: Update apt cache on worker
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages on worker
+      apt:
+        upgrade: dist
+
+    - name: Refresh MicroK8s snap on worker
+      command: snap refresh microk8s
+
+    - name: Uncordon the worker node
+      command: microk8s kubectl uncordon {{ inventory_hostname }}
