@@ -14,7 +14,6 @@ spec:
         githubConfigUrl: "https://github.com/jrc356/castsense-pro"
         githubConfigSecret: arc-gha-rs-github-secret
         runnerScaleSetName: "arc-runner-set"
-        minRunners: 1
         controllerServiceAccount:
           name: arc-controller-gha-rs-controller
           namespace: arc-systems
