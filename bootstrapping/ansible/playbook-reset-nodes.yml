@@ -1,0 +1,60 @@
+- name: Reset nodes for MicroK8s reinstall
+  hosts: cluster
+  become: true
+  tasks:
+    - name: Remove microk8s snap
+      community.general.snap:
+        name: microk8s
+        state: absent
+      ignore_errors: true
+
+    - name: Remove leftover microk8s directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /var/snap/microk8s
+        - /var/lib/microk8s
+        - /var/lib/kubelet
+        - /var/lib/containerd
+        - /etc/cni
+        - /opt/cni
+        - /root/.kube
+        - /home/{{ ansible_user }}/.kube
+
+    - name: Remove all disabled snap revisions
+      ansible.builtin.shell: |
+        set -o pipefail
+        snap list --all | awk '/disabled/{print $1, $3}' | while read name rev; do
+          snap remove "$name" --revision="$rev"
+        done
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+    - name: Vacuum systemd journal to 200MB
+      ansible.builtin.command: journalctl --vacuum-size=200M
+      changed_when: false
+
+    - name: Set permanent journal size cap
+      ansible.builtin.copy:
+        dest: /etc/systemd/journald.conf.d/max-size.conf
+        content: |
+          [Journal]
+          SystemMaxUse=200M
+        mode: "0644"
+        owner: root
+        group: root
+      notify: Restart journald
+
+    - name: apt clean and autoremove
+      ansible.builtin.apt:
+        clean: true
+        autoremove: true
+        purge: true
+
+  handlers:
+    - name: Restart journald
+      ansible.builtin.systemd:
+        name: systemd-journald
+        state: restarted
