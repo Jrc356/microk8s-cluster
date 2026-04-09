@@ -4,12 +4,12 @@
     - name: "microk8s_channel"
       prompt: "Which channel would you like to upgrade to?"
       private: false
-      default: "1.32/stable"
+      default: "1.35/stable"
   become: yes
   serial: 1
   tasks:
     - name: Drain the node
-      command: microk8s kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-local-data
+      command: microk8s kubectl drain {{ inventory_hostname }} --ignore-daemonsets --delete-emptydir-data
 
     - name: Update apt cache
       apt:

@@ -9,7 +9,7 @@ These steps outline provisioning VM's via unraid. If you're using this as a guid
 VM's with your hypervisor of choice and skip over this section. If you're using Unraid, this is what I did to prepare:
 
 1. [Download ubuntu server iso](https://ubuntu.com/download/server) and copy it to an Unraid share
-2. Create 3 (or as many as you want) VMs
+2. Create 3 VMs (1 master, 2 workers)
    1. Unraid Steps:
       1. Go to `VMs`
       2. Click `Create`
@@ -20,14 +20,14 @@ VM's with your hypervisor of choice and skip over this section. If you're using 
          1. ensure OpenSSH is installed
          2. do not install other add ons, this will be done with ansible later
          3. I will be making my vm's have static ips of
-            1. master nodes will use the ips `10.0.0.203`, `10.0.0.204`, and `10.0.0.205` [^2]
+            1. master node will use the ip `10.0.0.203` [^2]
             2. worker nodes will use the ips of `10.0.0.206` and `10.0.0.207` [^2]
             3. during installation we'll reach a network prompt
             4. edit the network interface by selecting it and then selecting `Edit IPv4`
             5. change `Automatic (DHCP)` to `Manual`
             6. fill out the configuration for the network you'd like to use. I will be using the following:
                1. subnet: `10.0.0.0/24`
-               2. address: `10.0.0.203` or `10.0.0.204` or `10.0.0.205`
+               2. address: `10.0.0.203`, `10.0.0.206`, or `10.0.0.207`
                3. gateway: `10.0.0.1`
                4. name servers: `8.8.8.8,1.1.1.1`
       6. Stop VMs, unmount installation disks, restart vms
